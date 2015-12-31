@@ -14,13 +14,13 @@ else:
 BASEDIR = os.path.realpath(os.path.dirname(os.path.realpath(__file__))+"/../")
 sys.path.append(BASEDIR)
 
-# capstone is now a requirement
-WITH_CAPSTONE = True
-WITH_BAP = True
+# BAP is no longer supported
+WITH_BAP = False
 
-# it's time for this to be true
-# required for the next release
-WITH_STATIC = True
+# TODO: make this true in v3
+WITH_STATIC = False
 STATIC_ENGINE = "builtin"
+STATIC_CACHE_BASE = "/tmp/qira_static_cache/"
 
 WEBSOCKET_DEBUG = False
+

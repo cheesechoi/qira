@@ -75,13 +75,23 @@ function get_data_type(v, more) {
   }
 }
 
+function hexify(addr) {
+  if (addr.substr(0, 2) == "0x") {
+    return addr;
+  } else {
+    return hex(fdec(addr));
+  }
+}
+
 function update_dview(addr) {
+  addr = hexify(addr);
   Session.set('daddr', addr);
   Session.set('dview', bn_add(bn_round(addr, 1), -0x20));
   push_history("update dview");
 }
 
 function update_iaddr(addr, dirty) {
+  addr = hexify(addr);
   if (dirty === undefined) dirty = true;
   Session.set("iaddr", addr);
   if (dirty) {
@@ -149,5 +159,11 @@ function async_tags_request(addrs, cb) {
     }
   }
   req.send(JSON.stringify(addrs));
+}
+
+function get_size(id) {
+  // TODO: 16 shouldn't be hardcoded
+  var size = Math.round($($(id).parents("div")[1]).height() / 16.0);
+  return size;
 }
 

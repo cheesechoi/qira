@@ -26,7 +26,8 @@ if __name__ == '__main__':
   parser.add_argument("--host", metavar="HOST", help="listen address for web interface and socat. "+qira_config.HOST+" by default", default=qira_config.HOST)
   parser.add_argument("--web-port", metavar="PORT", help="listen port for web interface. 3002 by default", type=int, default=qira_config.WEB_PORT)
   parser.add_argument("--socat-port", metavar="PORT", help="listen port for socat. 4000 by default", type=int, default=qira_config.SOCAT_PORT)
-  parser.add_argument("--static", metavar="STATIC_ENGINE", help="static engine to use with static2 (builtin or r2)", nargs="?")
+  parser.add_argument('-S', '--static', help="enable static2", action="store_true")
+  parser.add_argument("--engine", help="static engine to use with static2 (builtin or r2)", default="builtin")
   #capstone flag in qira_config for now
 
   # parse arguments, first try
@@ -41,8 +42,8 @@ if __name__ == '__main__':
   # validate arguments
   if args.web_port < 1 or args.web_port > 65535:
     raise Exception("--web-port must be a valid port number (1-65535)")
-  if args.socat_port < 1 or args.socat_port > 65535:
-    raise Exception("--socat-port must be a valid port number (1-65535)")
+  if args.socat_port < 1 or args.socat_port > 65534:
+    raise Exception("--socat-port must be a valid port number (1-65534)")
   try:
     args.host = ipaddr.IPAddress(args.host).exploded
   except ValueError:
@@ -55,25 +56,19 @@ if __name__ == '__main__':
   else:
     qira_config.USE_PIN = args.pin
 
-  if qira_config.USE_PIN:
-    qira_config.WITH_CAPSTONE = True
 
   qira_config.HOST = args.host
   qira_config.WEB_PORT = args.web_port
   qira_config.SOCAT_PORT = args.socat_port
   qira_config.FORK_PORT = args.socat_port + 1
-  if qira_config.WITH_CAPSTONE:
-    try:
-      from capstone import *
-    except:
-      print "*** warning: WITH_CAPSTONE enabled but capstone not installed."
-      qira_config.WITH_CAPSTONE = False
+
   if args.tracelibraries:
     qira_config.TRACE_LIBRARIES = True
+
   if args.static:
-    print "*** enabling static with engine", args.static
+    print "*** using static"
     qira_config.WITH_STATIC = True
-    qira_config.STATIC_ENGINE = args.static 
+    qira_config.STATIC_ENGINE = args.engine
   if args.flush_cache:
     print "*** flushing caches"
     os.system("rm -rfv /tmp/qira*")
